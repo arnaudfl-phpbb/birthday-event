@@ -1,0 +1,117 @@
+## -- MOD Title: Birthday Event
+## -- MOD Author: reddog (N/A) http://www.reddevboard.com/
+## -- MOD Version: 1.1.0c ("The Good Morning to All" edition)
+
+###########################################
+## -- v1.1.0b to v1.1.0c - 2007/08/18 -- ##
+###########################################
+
+## -- files to edit: 
+	admin/admin_board.php
+	admin/admin_users.php
+	includes/usercp_register.php
+
+## -- files included:
+	root/includes/class_birthday.php
+	root/language/lang_english/lang_extend_birthday.php
+	root/templates/subSilver/acp/acp_birthday_config_box.tpl
+
+#
+#-----[ SQL ]-------------------------------------------------
+#
+# change 'phpbb_' by your table prefix if necessary
+#
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_wishes',1);
+#
+#-----[ COPY ]------------------------------------------------
+#
+COPY root/includes/class_birthday.php TO includes/class_birthday.php
+COPY root/language/lang_english/lang_extend_birthday.php TO language/lang_english/lang_extend_birthday.php
+COPY root/templates/subSilver/acp/acp_birthday_config_box.tpl TO templates/subSilver/acp/acp_birthday_config_box.tpl
+#
+#-----[ OPEN ]------------------------------------------------
+#
+admin/admin_board.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$bday_fields = array(
+	'bday_show' => $new['bday_show'],
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+	'bday_wishes' => $new['bday_wishes'],
+#
+#-----[ OPEN ]------------------------------------------------
+#
+admin/admin_users.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$sql = str_replace('SET ', 'SET user_birthday = \'' . sprintf('%02d-%02d-%04d', $bday_month, $bday_day, $bday_year) . '\', user_zodiac = ' . $user_zodiac . ', ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ REPLACE WITH ]----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$sql = str_replace('SET ', 'SET user_birthday = \'' . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . '\', user_zodiac = ' . $user_zodiac . ', ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+includes/usercp_register.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$sql = str_replace('SET ', 'SET user_birthday = \'' . sprintf('%02d-%02d-%04d', $bday_month, $bday_day, $bday_year) . '\', user_zodiac = ' . $user_zodiac . ', ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ REPLACE WITH ]----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$sql = str_replace('SET ', 'SET user_birthday = \'' . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . '\', user_zodiac = ' . $user_zodiac . ', ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+//-- mod : birthday ------------------------------------------------------------
+// here we added
+//	, user_birthday, user_zodiac
+//	, '" . sprintf('%02d-%02d-%04d', $bday_month, $bday_day, $bday_year) . "', $user_zodiac
+//-- modify
+#
+#-----[ REPLACE WITH ]----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+// here we added
+//	, user_birthday, user_zodiac
+//	, '" . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . "', $user_zodiac
+//-- modify
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+sprintf('%02d-%02d-%04d', $bday_month, $bday_day, $bday_year)
+#
+#-----[ IN-LINE REPLACE WITH ]--------------------------------
+#
+$birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year))
+#
+#-----[ SAVE/CLOSE ALL FILES ]--------------------------------
+#
+# EoM

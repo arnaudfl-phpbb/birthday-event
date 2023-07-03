@@ -1,0 +1,185 @@
+##############################################################
+## MOD Title:		Birthday Event with Rank Color System
+## MOD Author: reddog < N/A > (N/A) http://www.reddevboard.com/
+## MOD Description:	This addon will allow to display the user's birthday details
+##			in the user's profile added by Rank Color System MOD
+## MOD Version:		1.0.0
+##
+## Installation Level:	Easy
+## Installation Time:	2 Minutes
+## Files To Edit:	2
+##	userlist.php
+##	templates/subSilver/userlist_view.tpl
+## Included Files:	(N/A)
+##
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes:
+##
+##  You must have Rank Color System and Birthday Event MODs by reddog installed for this to work.
+##
+##############################################################
+## MOD History:
+##
+## 2007-08-08 - Version 1.0.0
+##      - first release
+##
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD
+##############################################################
+#
+#-----[ OPEN ]------------------------------------------------
+#
+userlist.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+'user_group_id',
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			'user_birthday',
+			'user_zodiac',
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+function get_user_vars(
+{
+	global
+	global
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+		global $birthday;
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$avatar = $this->get_avatar($user_id);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			// birthday
+			$birthdays = $birthday->display_details($this->data[$user_id]['user_birthday'], $this->data[$user_id]['user_zodiac'], true);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+'USER_MSN' =>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+				'USER_BIRTHDATE' => empty($birthdays) ? '' : $birthdays['birthday'],
+				'USER_AGE' => empty($birthdays) ? '' : $birthdays['age'],
+				'L_USER_ZODIAC' => empty($birthdays) ? '' : lang_item($birthdays['zodiac']),
+				'I_USER_ZODIAC' => empty($birthdays) ? '' : $images[$birthdays['zodiac']],
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+	'rank' => !empty($rank),
+);
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+				'birthday' => !empty($birthdays),
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			if ( !empty($birthdays) )
+			{
+				$this->user_vars[$user_id]['switches'] += array(
+					'birthday.zodiac' => !empty($birthdays['zodiac']),
+					'birthday.birthcake' => !empty($birthdays['birthcake']),
+				);
+			}
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+'L_YIM' =>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	'L_BIRTHDATE' => $lang['birthdate'],
+	'L_AGE' => $lang['poster_age'],
+	'L_BIRTHCAKE' => $lang['happy_birthday'],
+	'I_BIRTHCAKE' => $images['mini_birthcake'],
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/userlist_view.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+</tr>
+<!-- END interests -->
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+	<!-- BEGIN birthday -->
+	<tr>
+		<td class="abstop hright nowrap"><span class="gen">{L_BIRTHDATE}:</span></td>
+		<td width="100%"><span class="gen">
+			<strong>{USER_BIRTHDATE}</strong>&nbsp;({USER_AGE})
+			<!-- BEGIN zodiac --><img src="{I_USER_ZODIAC}" alt="{L_USER_ZODIAC}" title="{L_USER_ZODIAC}" style="vertical-align:text-bottom;" /><!-- END zodiac -->
+			<!-- BEGIN birthcake -->&nbsp;<img class="gensmall" src="{I_BIRTHCAKE}" alt="{L_BIRTHCAKE}" title="{L_BIRTHCAKE}" style="vertical-align:text-bottom;" /><!-- END birthcake -->
+		</span></td>
+	</tr>
+	<!-- END birthday -->
+#
+#-----[ SAVE/CLOSE ALL FILES ]--------------------------------
+#
+# EoM

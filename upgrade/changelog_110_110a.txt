@@ -1,0 +1,21 @@
+## -- MOD Title: Birthday Event
+## -- MOD Author: reddog (N/A) http://www.reddevboard.com/
+## -- MOD Version: 1.1.0a ("The Good Morning to All" edition)
+
+##########################################
+## -- v1.1.0 to v1.1.0a - 2007/08/14 -- ##
+##########################################
+
+## -- files included:
+	root/includes/class_birthday.php
+	root/templates/subSilver/ucp/ucp_birthday_select_box.tpl
+
+#
+#-----[ COPY ]------------------------------------------------
+#
+COPY root/includes/class_birthday.php TO includes/class_birthday.php
+COPY root/templates/subSilver/ucp/ucp_birthday_select_box.tpl TO templates/subSilver/ucp/ucp_birthday_select_box.tpl
+#
+#-----[ SAVE/CLOSE ALL FILES ]--------------------------------
+#
+# EoM

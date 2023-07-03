@@ -1,0 +1,846 @@
+##############################################################
+## MOD Title:		Birthday Event
+## MOD Author: reddog < N/A > (N/A) http://www.reddevboard.com/
+## MOD Description:	this MOD adds a birthday field to the user profile,
+##			displays a zodiac image if the member has specified
+##			date of birth, and contains other features.
+## MOD Version:		1.1.0c
+##
+## Installation Level:	Intermediate
+## Installation Time:	20 Minutes
+## Files To Edit:	15
+##	common.php
+##	index.php
+##	viewtopic.php
+##	admin/admin_board.php
+##	admin/admin_users.php
+##	includes/functions.php
+##	includes/usercp_avatar.php
+##	includes/usercp_register.php
+##	includes/usercp_viewprofile.php
+##	templates/subSilver/index_body.tpl
+##	templates/subSilver/profile_add_body.tpl
+##	templates/subSilver/profile_view_body.tpl
+##	templates/subSilver/subSilver.cfg
+##	templates/subSilver/viewtopic_body.tpl
+##	templates/subSilver/admin/board_config_body.tpl
+##	templates/subSilver/admin/user_edit_body.tpl
+## Included Files:
+##	root/includes/class_birthday.php
+##	root/includes/class_common.php
+##	root/includes/lang_extend_mac.php
+##	root/includes/template.php
+##	root/language/lang_english/lang_extend_birthday.php
+##	root/templates/subSilver/index_birthdays_box.tpl
+##	root/templates/subSilver/acp/acp_birthday_config_box.tpl
+##	root/templates/subSilver/images/birthday/*.*
+##	root/templates/subSilver/ucp/ucp_birthday_select_box.tpl
+##
+## License: http://opensource.org/licenses/gpl-license.php GNU General Public License v2
+##############################################################
+## For security purposes, please check: http://www.phpbb.com/mods/
+## for the latest version of this MOD. Although MODs are checked
+## before being allowed in the MODs Database there is no guarantee
+## that there are no security problems within the MOD. No support
+## will be given for MODs not found within the MODs Database which
+## can be found at http://www.phpbb.com/mods/
+##############################################################
+## Author Notes:
+##
+## ¤ Features
+## -----------
+## A. settings are available from General Admin -> Configuration
+##	- display birthday panel (yes/no)
+##	- wish birthdays (yes/no)
+##	- require date of birth (yes/no)
+##	- disallow date of birth changes (yes/no)
+##	- number of days to look ahead (value)
+##	- allowable age range (values)
+##	- display zodiac signs (yes/no)
+## B. options which are displayed with this MOD
+##	- date of birth, age, zodiac signs in the users profile
+##	- list of users which have a birthday to celebrate in the index's Birthday Panel
+##	- list of users which have a upcoming birthday to celebrate in the index's Birthday Panel
+##	- age and zodiac beside users posts by viewing topics
+##	- birthcake in the users profile and beside users posts for those which have their birthday
+##
+## ¤ Informations
+## ---------------
+##
+## The zodiac signs addon was inspired on the "Birthday Addon zodiac's" mod by Niels
+## and the "Birthday Zodiac Optimization" mod by Xpert.
+##
+## The zodiac images are from the "Birthday Addon zodiac's" mod by Niels.
+##
+##############################################################
+## MOD History:
+##
+## 2007-08-17 - Version 1.1.0c
+##	- added the ability to display or not the index.php's birthday panel and birthday cake
+##	- fix the birthday cake not displayed in posts
+##	- fixes and optimizations
+## 2007-08-17 - Version 1.1.0b
+##	- fix a bug with details shown beside posts when no date of birth is available
+## 2007-08-14 - Version 1.1.0a
+##	- fix a bug when user edits his profile and "read-only" is enabled
+##	- added the ability to change date of birth for admin when "read-only" is enabled
+## 2007-08-11 - Version 1.1.0 ("The Good Morning to All" edition) - begun 2007-07-29
+##	a complete overall of birthday event, with a lot of new features including:
+##	- added the ability to display zodiac images
+##	- added the ability to make dates of birth "read-only"
+##	- only active users are shown in index.php's birthday panel
+##	- added the ability to show the index.php's birthday panel all the time
+##	- added the ability to display birthdays that are x days away
+## 2006-06-10 - Version 1.0.3e
+##	- typo with February 29th (leap year)
+## 2006-05-20 - Version 1.0.3d
+##	- modified how additional language file is loaded
+## 2006-04-26 - Version 1.0.3c
+##	- little improvements
+##	- compatible with phpBB 2.0.20
+## 2006-01-01 - Version 1.0.3b
+##	- bad greetings with month starting by number 1
+## 2005-11-18 - Version 1.0.3a
+##	- "bday_required" value not assigned
+## 2005-11-06 - Version 1.0.3
+##	- fixed error with birthdate
+##	- minor correction in language file
+## 2005-10-21 - Version 1.0.2
+##	- added new php class
+##	- code improvements
+## 2005-09-28 - Version 1.0.1
+##	- minor error with the age shown from profile and topics
+## 2005-09-25 - Version 1.0.0a
+##	- username not displayed on board index
+## 2005-09-17 - Version 1.0.0
+##      - initial release
+##
+##############################################################
+## Before Adding This MOD To Your Forum, You Should Back Up All Files Related To This MOD
+##############################################################
+#
+#-----[ DIY INSTRUCTIONS ]------------------------------------
+#
+Once the renames done, I strongly advice you to backup them,
+then to remove them from your webspace.
+
+IMPORTANT: don't rename and replace the template.php file, if you have installed Rank Color System before
+or if you use eXtreme Styles mod 2.x on your board.
+
+RENAME includes/template.php INTO includes/_sav_template.php
+
+If you prefer you can run the db_update.php file in /contrib.
+However you must run this file before making code changes.
+
+ * - Installation:
+ *   1) Make backups of your database before proceeding!
+ *   2) Create a subdirectory named "install" (without quotes) in your phpBB installation.
+ *   3) Upload the "db_update.php" file to your newly created install directory.
+ *   4) Now, open the script using your browser of choice as in the following example:
+ *      http://www.example.com/forums/install/db_update.php
+ *      ...and follow instructions.
+ *   5) Once, your DB has been updated, remove the install directory and this file.
+
+IMPORTANT: don't execute the SQL Queries below if you run the db_update.php file.
+#
+#-----[ SQL ]-------------------------------------------------
+#
+# change 'phpbb_' by your table prefix if necessary
+#
+ALTER TABLE phpbb_users ADD user_birthday VARCHAR(10) NOT NULL DEFAULT '';
+ALTER TABLE phpbb_users ADD user_zodiac TINYINT(2) NOT NULL DEFAULT 0;
+ALTER TABLE phpbb_users ADD INDEX user_birthday (user_birthday);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_show',1);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_wishes',1);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_require',0);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_lock',0);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_lookahead',7);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_min',5);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_max',100);
+INSERT INTO phpbb_config (config_name,config_value) VALUES ('bday_zodiac',0);
+#
+#-----[ COPY ]------------------------------------------------
+#
+COPY root/*.* TO *.*
+#
+#-----[ OPEN ]------------------------------------------------
+#
+common.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+include($phpbb_root_path . 'includes/db.'.$phpEx);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# This part can already be existing : if so, just skip it
+#
+//-- mod : class common --------------------------------------------------------
+//-- add
+include($phpbb_root_path . 'includes/class_common.' . $phpEx);
+//-- fin mod : class common ----------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+if (file_exists('install') || file_exists('contrib'))
+{
+	message_die(
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+include($phpbb_root_path . 'includes/class_birthday.' . $phpEx);
+
+// instantiate birthday object
+$birthday = new birthday_class();
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+index.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+// Start output of page
+//
+define('SHOW_ONLINE', true);
+$page_title = $lang['Index'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$birthday->generate_list();
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+viewtopic.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$sql = "SELECT u.username
+	FROM
+	WHERE
+		$limit_posts_time
+		AND
+		AND
+	ORDER BY
+	LIMIT
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+$sql = str_replace('SELECT ', 'SELECT u.user_birthday, u.user_zodiac, ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$poster = ( $poster_id == ANONYMOUS ) ? $lang['Guest'] : $postrow[$i]['username'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$poster_birthday = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $postrow[$i]['user_birthday'] : '';
+	$poster_zodiac = ( $postrow[$i]['user_id'] != ANONYMOUS ) ? $postrow[$i]['user_zodiac'] : '';
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+		'U_POST_ID' =>
+	);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$birthday->display_details($poster_birthday, $poster_zodiac, false, 'postrow');
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+admin/admin_board.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+	"body" => "admin/board_config_body.tpl")
+);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+$bday_fields = array(
+	'bday_show' => $new['bday_show'],
+	'bday_wishes' => $new['bday_wishes'],
+	'bday_require' => $new['bday_require'],
+	'bday_lock' => $new['bday_lock'],
+	'bday_lookahead' => $new['bday_lookahead'],
+	'bday_min' => $new['bday_min'],
+	'bday_max' => $new['bday_max'],
+	'bday_zodiac' => $new['bday_zodiac'],
+);
+$birthday->display_config($bday_fields);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+admin/admin_users.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$interests = ( !empty($HTTP_POST_VARS['interests']) ) ?
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+		$bday_day = request_var('bday_day', TYPE_INT);
+		$bday_month = request_var('bday_month', TYPE_INT);
+		$bday_year = request_var('bday_year', TYPE_INT);
+
+		// zodiac signs
+		$user_zodiac = $birthday->zodiac->get_zodiac(array('d' => $bday_day, 'm' => $bday_month));
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$sql = "UPDATE " . USERS_TABLE . "
+	SET
+	WHERE
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$sql = str_replace('SET ', 'SET user_birthday = \'' . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . '\', user_zodiac = ' . $user_zodiac . ', ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$interests = htmlspecialchars($this_userdata['user_interests']);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+		$bday_day = $bday_month = $bday_year = 0;
+		if ( !empty($this_userdata['user_birthday']) )
+		{
+			list($bday_month, $bday_day, $bday_year) = explode('-', $this_userdata['user_birthday']);
+		}
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$s_hidden_fields .= '<input type="hidden" name="interests"
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$s_hidden_fields .= '<input type="hidden" name="bday_day" value="' . intval($bday_day) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="bday_month" value="' . intval($bday_month) . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="bday_year" value="' . intval($bday_year) . '" />';
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+	"body" => "admin/user_edit_body.tpl")
+);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+		$birthday->select_birthdate(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year));
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+includes/functions.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+	//
+	// Set up style
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+# This part can already be existing : if so, just skip it
+#
+//-- mod : language settings ---------------------------------------------------
+//-- add
+	include($phpbb_root_path . 'includes/lang_extend_mac.' . $phpEx);
+//-- fin mod : language settings -----------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+		}
+
+		if ( empty($template) || empty($theme) )
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+# This part can already be existing : if so, just skip it
+#
+//-- mod : language settings ---------------------------------------------------
+//-- add
+			include($phpbb_root_path . 'includes/lang_extend_mac.' . $phpEx);
+//-- fin mod : language settings -----------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+includes/usercp_avatar.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+function display_avatar_gallery(
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+// here we added
+//	, &$bday_day, &$bday_month, &$bday_year
+//-- modify
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+, &$interests
+#
+#-----[ IN-LINE AFTER, ADD ]----------------------------------
+#
+, &$bday_day, &$bday_month, &$bday_year
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$params = array(
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+// here we added
+//	, 'bday_day', 'bday_month', 'bday_year'
+//-- modify
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+, 'interests'
+#
+#-----[ IN-LINE AFTER, ADD ]----------------------------------
+#
+, 'bday_day', 'bday_month', 'bday_year'
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+includes/usercp_register.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$user_avatar = ( empty($user_avatar_
+$user_avatar_type = ( empty($user_avatar_
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$bday_day = request_var('bday_day', TYPE_INT);
+	$bday_month = request_var('bday_month', TYPE_INT);
+	$bday_year = request_var('bday_year', TYPE_INT);
+
+	// zodiac signs
+	$user_zodiac = $birthday->zodiac->get_zodiac(array('d' => $bday_day, 'm' => $bday_month));
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+		$avatar_sql = user_avatar_gallery(
+	}
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$birthdate_invalid = empty($bday_day) || empty($bday_month) || empty($bday_year);
+	if ( $birthdate_invalid && !empty($board_config['bday_require']) )
+	{
+		$error = true;
+		$error_msg .= ( isset($error_msg) ? '<br />' : '' ) . $lang['birthday_invalid'];
+	}
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$sql = "UPDATE " . USERS_TABLE . "
+	SET
+	WHERE
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+			$sql = str_replace('SET ', 'SET user_birthday = \'' . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . '\', user_zodiac = ' . $user_zodiac . ', ', $sql);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$sql = "INSERT INTO " . USERS_TABLE . "
+	VALUES
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+// here we added
+//	, user_birthday, user_zodiac
+//	, '" . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . "', $user_zodiac
+//-- modify
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+, user_interests
+#
+#-----[ IN-LINE AFTER, ADD ]----------------------------------
+#
+, user_birthday, user_zodiac
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+, '" . str_replace("\'", "''", $interests) . "'
+#
+#-----[ IN-LINE AFTER, ADD ]----------------------------------
+#
+, '" . $birthday->pack(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year)) . "', $user_zodiac
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+$attachsig = $userdata['user_attachsig'];
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$bday_day = $bday_month = $bday_year = 0;
+	if ( !empty($userdata['user_birthday']) )
+	{
+		list($bday_month, $bday_day, $bday_year) = explode('-', $userdata['user_birthday']);
+	}
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+display_avatar_gallery(
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+// here we added
+//	, $bday_day, $bday_month, $bday_year
+//-- modify
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+, $interests
+#
+#-----[ IN-LINE AFTER, ADD ]----------------------------------
+#
+, $bday_day, $bday_month, $bday_year
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+	'S_PROFILE_ACTION' =>
+);
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+	$birthday->select_birthdate(array('d' => $bday_day, 'm' => $bday_month, 'y' => $bday_year));
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+includes/usercp_viewprofile.php
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+//
+// Generate page
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+$birthday->display_details($profiledata['user_birthday'], $profiledata['user_zodiac']);
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/index_body.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+{L_ONLINE_EXPLAIN}
+</tr>
+</table>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+
+{BIRTHDAYS_BOX}
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/profile_add_body.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+{INTERESTS}
+</td>
+</tr>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+	{BIRTHDAY_SELECT_BOX}
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/profile_view_body.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+{INTERESTS}
+</tr>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+	<!-- BEGIN birthday -->
+	<tr>
+		<td valign="middle" align="right" nowrap="nowrap"><span class="gen">{L_BIRTHDATE}:</span></td>
+		<td valign="middle"><span class="gen">
+			<strong>{birthday.BIRTHDATE}</strong>&nbsp;({birthday.AGE})
+			<!-- BEGIN zodiac --><img src="{birthday.I_ZODIAC}" alt="{birthday.L_ZODIAC}" title="{birthday.L_ZODIAC}" style="vertical-align:text-bottom;" /><!-- END zodiac -->
+			<!-- BEGIN birthcake -->&nbsp;<img class="gensmall" src="{I_BIRTHCAKE}" alt="{L_BIRTHCAKE}" title="{L_BIRTHCAKE}" style="vertical-align:text-bottom;" /><!-- END birthcake -->
+		</span></td>
+	</tr>
+	<!-- END birthday -->
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/subSilver.cfg
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+?>
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+//-- mod : birthday ------------------------------------------------------------
+//-- add
+$images['birthcake'] = $current_template_images . '/birthday/birthcake.gif';
+$images['mini_birthcake'] = $current_template_images . '/birthday/mini_birthcake.gif';
+
+// zodiac signs
+$images['Capricorn'] = $current_template_images . '/birthday/icon_zodiac_capricorn.gif';
+$images['Aquarius'] = $current_template_images . '/birthday/icon_zodiac_aquarius.gif';
+$images['Pisces'] = $current_template_images . '/birthday/icon_zodiac_pisces.gif';
+$images['Aries'] = $current_template_images . '/birthday/icon_zodiac_aries.gif';
+$images['Taurus'] = $current_template_images . '/birthday/icon_zodiac_taurus.gif';
+$images['Gemini'] = $current_template_images . '/birthday/icon_zodiac_gemini.gif';
+$images['Cancer'] = $current_template_images . '/birthday/icon_zodiac_cancer.gif';
+$images['Leo'] = $current_template_images . '/birthday/icon_zodiac_leo.gif';
+$images['Virgo'] = $current_template_images . '/birthday/icon_zodiac_virgo.gif';
+$images['Libra'] = $current_template_images . '/birthday/icon_zodiac_libra.gif';
+$images['Scorpio'] = $current_template_images . '/birthday/icon_zodiac_scorpio.gif';
+$images['Sagittarius'] = $current_template_images . '/birthday/icon_zodiac_sagittarius.gif';
+//-- fin mod : birthday --------------------------------------------------------
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/viewtopic_body.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+{postrow.POSTER_FROM}
+#
+#-----[ IN-LINE FIND ]----------------------------------------
+#
+{postrow.POSTER_FROM}
+#
+#-----[ IN-LINE REPLACE WITH ]--------------------------------
+#
+{postrow.POSTER_FROM}
+			<!-- BEGIN birthday -->
+			<br />{L_AGE}:&nbsp;{postrow.birthday.AGE}
+			<!-- BEGIN zodiac --><img class="gensmall" src="{postrow.birthday.I_ZODIAC}" alt="{postrow.birthday.L_ZODIAC}" title="{postrow.birthday.L_ZODIAC}" style="vertical-align:text-bottom;" /><!-- END zodiac -->
+			<!-- BEGIN birthcake -->&nbsp;<img class="gensmall" src="{I_BIRTHCAKE}" alt="{L_BIRTHCAKE}" title="{L_BIRTHCAKE}" style="vertical-align:text-bottom;" /><!-- END birthcake -->
+			<!-- END birthday -->
+#
+# NOTE --- so the result should look something like this:
+#		<td width="150" align="left" valign="top" class="{postrow.ROW_CLASS}"><span class="name"><a name="{postrow.U_POST_ID}"></a><b>{postrow.POSTER_NAME}</b></span><br /><span class="postdetails">{postrow.POSTER_RANK}<br />{postrow.RANK_IMAGE}{postrow.POSTER_AVATAR}<br /><br />{postrow.POSTER_JOINED}<br />{postrow.POSTER_POSTS}<br />{postrow.POSTER_FROM}
+#			<!-- BEGIN birthday -->
+#			<br />{L_AGE}:&nbsp;{postrow.birthday.AGE}
+#			<!-- BEGIN zodiac --><img class="gensmall" src="{postrow.birthday.I_ZODIAC}" alt="{postrow.birthday.L_ZODIAC}" title="{postrow.birthday.L_ZODIAC}" style="vertical-align:text-bottom;" /><!-- END zodiac -->
+#			<!-- BEGIN birthcake -->&nbsp;<img class="gensmall" src="{I_BIRTHCAKE}" alt="{L_BIRTHCAKE}" title="{L_BIRTHCAKE}" style="vertical-align:text-bottom;" /><!-- END birthcake -->
+#			<!-- END birthday -->
+#		</span><br /></td>
+#
+
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/admin/board_config_body.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+<tr>
+{L_COOKIE_SETTINGS}
+#
+#-----[ BEFORE, ADD ]-----------------------------------------
+#
+	{BIRTHDAY_CONFIG_BOX}
+#
+#-----[ OPEN ]------------------------------------------------
+#
+templates/subSilver/admin/user_edit_body.tpl
+#
+#-----[ FIND ]------------------------------------------------
+#
+# This may be a partial find and not the whole line(s)
+#
+{INTERESTS}
+</td>
+</tr>
+#
+#-----[ AFTER, ADD ]------------------------------------------
+#
+# Add these lines on a new blank line after the preceding line(s) to find
+#
+	{BIRTHDAY_SELECT_BOX}
+#
+#-----[ SAVE/CLOSE ALL FILES ]--------------------------------
+#
+# EoM

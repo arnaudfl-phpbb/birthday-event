@@ -1,0 +1,19 @@
+## -- MOD Title: Birthday Event
+## -- MOD Author: reddog (N/A) http://www.reddevboard.com/
+## -- MOD Version: 1.1.0b ("The Good Morning to All" edition)
+
+###########################################
+## -- v1.1.0a to v1.1.0b - 2007/08/17 -- ##
+###########################################
+
+## -- files included:
+	root/includes/class_birthday.php
+
+#
+#-----[ COPY ]------------------------------------------------
+#
+COPY root/includes/class_birthday.php TO includes/class_birthday.php
+#
+#-----[ SAVE/CLOSE ALL FILES ]--------------------------------
+#
+# EoM
